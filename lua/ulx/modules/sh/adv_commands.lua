@@ -18,7 +18,7 @@ motd:addParam{type=ULib.cmds.PlayerArg}
 --
 -- Crashes a target by either closing the game or freezing it
 --
-local crashMethods = {"Exit", "Freeze"}
+--[[local crashMethods = {"Exit", "Freeze"}
 
 local function crash(calling_ply, target_ply, crashType)
 	if table.HasValue(crashMethods, crashType) then
@@ -34,7 +34,7 @@ crash:defaultAccess(ULib.ACCESS_SUPERADMIN)
 crash:help("Crashes the target's game.")
 crash:addParam{type=ULib.cmds.PlayerArg}
 crash:addParam{type=ULib.cmds.StringArg, hint="Method", completes=crashMethods, default="Exit"}
-
+]]--
 --
 -- ulx freezeprops
 --
