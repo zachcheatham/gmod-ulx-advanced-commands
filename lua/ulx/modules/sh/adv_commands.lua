@@ -159,3 +159,29 @@ local screengrab = ulx.command("Utility", "ulx screengrab", screenGrab, "!screen
 screengrab:addParam{type=ULib.cmds.PlayerArg}
 screengrab:defaultAccess(ULib.ACCESS_SUPERADMIN)
 screengrab:help("Takes a screenshot of a client's screen and opens it in a window.")
+
+--
+-- ulx randommap
+--
+-- Changes the map to a random map in the maps folder
+--
+local function randomMap(calling_ply)
+	local possibleMaps = {}
+	local mapFiles = file.Find("maps/*", "GAME")
+	
+	for _, file in ipairs(mapFiles) do
+		local name, extension = string.match(file, "(.*)%.(%a*)$")
+		if extension == "bsp" then
+			table.insert(possibleMaps, name)
+		end
+	end
+	
+	math.randomseed(SysTime())
+	local map = table.Random(possibleMaps)
+	
+	ulx.fancyLogAdmin(calling_ply, "#A changed the map to (randomly selected) #s", map)
+	game.ConsoleCommand("changelevel " .. map ..  "\n")
+end
+local randommap = ulx.command("Utility", "ulx randommap", randomMap, "!randommap")
+randommap:defaultAccess(ULib.ACCESS_ADMIN)
+randommap:help("Changes the map to a random one from the maps folder.")
