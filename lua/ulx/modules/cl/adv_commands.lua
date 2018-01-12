@@ -11,7 +11,7 @@ if not pmeta.SteamName then	-- So we don't break DarkRP or f*** ourself
 			return self:SteamName()
 		end
 	end
-	
+
 	pmeta.GetName = pmeta.Nick
 	pmeta.Name = pmeta.Nick
 end
@@ -22,17 +22,17 @@ end
 local gm = gamemode.Get("base") -- I should have no business calling this they say
 function gm:OnPlayerChat(ply, text, teamChat, dead)
 	local tab = {}
-	
+
 	if (dead) then
 		table.insert(tab, Color(255, 30, 40))
 		table.insert(tab, "*DEAD* ")
 	end
-	
+
 	if (teamChat) then
 		table.insert(tab, Color(30, 160, 40))
 		table.insert(tab, "(TEAM) ")
 	end
-	
+
 	if (IsValid(ply)) then
 		-- This is where the magic is
 		table.insert(tab, team.GetColor(ply:Team()))
@@ -40,12 +40,12 @@ function gm:OnPlayerChat(ply, text, teamChat, dead)
 	else
 		table.insert(tab, "Console")
 	end
-	
+
 	table.insert(tab, Color(255, 255, 255))
 	table.insert(tab, ": " .. text)
-	
+
 	chat.AddText(unpack(tab))
-	
+
 	return true
 end
 
@@ -58,7 +58,7 @@ local partIndex = 1
 
 net.Receive("screengrab_request", function()
 	grabID = net.ReadString()
-	
+
 	local capture = {}
 	capture.format = "jpeg"
 	capture.h = ScrH()
@@ -66,13 +66,13 @@ net.Receive("screengrab_request", function()
 	capture.quality = 70
 	capture.x = 0
 	capture.y = 0
-	
+
 	local imageData = util.Base64Encode(render.Capture(capture))
-	
+
 	-- Reset here in-case we never completed.
 	parts = {}
 	partIndex = 1
-	
+
 	local i = 1
 	local partSize = 20000
 	while i <= string.len(imageData) do
@@ -80,7 +80,7 @@ net.Receive("screengrab_request", function()
 		table.insert(parts, part)
 		i = i + partSize
 	end
-	
+
 	net.Start("screengrab_response")
 	net.WriteString(grabID)
 	net.WriteUInt(table.Count(parts), 32)
@@ -89,10 +89,10 @@ end)
 
 net.Receive("screengrab_request_part", function()
 	local part = parts[partIndex]
-	
+
 	local size = string.len(part)
 	local data = util.Compress(part)
-	
+
 	net.Start("screengrab_response_part")
 	net.WriteString(grabID)
 	net.WriteUInt(size, 32)
@@ -115,13 +115,13 @@ local receivedParts
 net.Receive("screengrab_relay_part", function()
 	local size = net.ReadUInt(32)
 	local part = net.ReadData(size)
-	
+
 	part = util.Decompress(part)
-	
+
 	if not receivedParts then
 		receivedParts = {}
 	end
-	
+
 	table.insert(receivedParts, part)
 end)
 
@@ -131,7 +131,7 @@ end)
 
 net.Receive("screengrab_relay_complete", function()
 	local plyName = net.ReadString()
-	
+
 	local imageData = string.Implode("", receivedParts)
 	receivedParts = nil
 	
@@ -145,9 +145,10 @@ net.Receive("screengrab_relay_complete", function()
 	window:ShowCloseButton(true)
 	window:Center()
 	window:MakePopup()
-	
+
 	local image = vgui.Create("HTML", window)
 	image:Dock(FILL)
 	image:SetHTML([[<img height="100%" src="data:image/jpeg;base64, ]] .. imageData .. [["/> ]])
-end)
 
+
+end)
